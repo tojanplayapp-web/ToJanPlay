@@ -1,0 +1,696 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToJanPlay - Premium Entertainment Hub</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link class="ui-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scroll-behavior: smooth; }
+        .active-tab { color: #eab308 !important; border-bottom: 2px solid #eab308; }
+        .active-filter { background-color: #eab308 !important; color: #000000 !important; font-weight: 700 !important; }
+        .fade-anim { transition: opacity 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="bg-[#0f0c1b] text-white font-sans pb-28 select-none">
+
+    <header id="main-header" class="flex justify-between items-center px-4 py-3 sticky top-0 bg-[#0f0c1b]/95 backdrop-blur-md z-50">
+        <div class="text-2xl font-bold tracking-wide cursor-pointer" onclick="switchView('home')">
+            ToJan<span class="text-yellow-500">Play</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="toggleNotificationModal()" class="relative p-1 cursor-pointer">
+                <i class="fa-regular fa-bell text-xl text-gray-300"></i>
+                <span id="noti-count" class="absolute top-0 right-0 bg-red-600 text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-[#0f0c1b]">3</span>
+            </button>
+            <button onclick="switchView('profile')" class="w-8 h-8 rounded-full border border-yellow-500/50 flex items-center justify-center bg-[#1b1731] font-bold text-yellow-500 text-sm shadow-md">
+                T
+            </button>
+        </div>
+    </header>
+
+    <nav id="top-nav" class="flex gap-6 px-4 py-2 text-sm font-semibold border-b border-gray-900/40 sticky top-[52px] bg-[#0f0c1b] z-40 overflow-x-auto no-scrollbar">
+        <button onclick="switchView('home')" id="tab-all" class="text-yellow-500 border-b-2 border-yellow-500 pb-1 whitespace-nowrap active-tab">Home</button>
+        <button onclick="switchView('all-live-tv')" class="text-gray-400 hover:text-white pb-1 whitespace-nowrap">Live TV</button>
+        <button onclick="switchView('all-sports')" class="text-gray-400 hover:text-white pb-1 whitespace-nowrap">Sports</button>
+        <button onclick="switchView('all-movies-view')" class="text-gray-400 hover:text-white pb-1 whitespace-nowrap">Movies</button>
+        <button onclick="switchView('all-movies-view')" class="text-gray-400 hover:text-white pb-1 whitespace-nowrap">Drama</button>
+    </nav>
+
+    <section id="player-section" class="hidden px-4 mt-2 sticky top-[95px] z-50">
+        <div class="max-w-md mx-auto bg-black rounded-xl overflow-hidden shadow-2xl border border-purple-900/40">
+            <video id="video-player" class="w-full aspect-video" controls autoplay playsinline></video>
+            <div class="p-3 bg-[#141026] flex justify-between items-center">
+                <div>
+                    <span class="bg-red-600 text-[9px] px-1.5 py-0.5 rounded font-black animate-pulse">LIVE PLAYING</span>
+                    <h2 class="text-xs font-bold mt-1" id="current-title">Streaming Now...</h2>
+                </div>
+                <button onclick="closePlayer()" class="text-gray-400 hover:text-white text-xs bg-gray-800 px-2.5 py-1 rounded">
+                    Close <i class="fa-solid fa-xmark ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <main id="home-view" class="view-content">
+        <section class="relative w-full aspect-[16/10] bg-black overflow-hidden mt-1">
+            <img id="hero-bg" src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=800" class="w-full h-full object-cover opacity-50 fade-anim">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0f0c1b] via-[#0f0c1b]/20 to-transparent"></div>
+            <div class="absolute bottom-6 left-4 right-4">
+                <h2 id="hero-title" class="text-2xl font-black tracking-tight mb-1 fade-anim">Trending Movies</h2>
+                <p id="hero-desc" class="text-xs text-gray-300 font-medium mb-4 fade-anim">New releases every week</p>
+                <button id="hero-play-btn" onclick="playStream('', 'Trending Movies')" class="bg-yellow-500 text-black font-bold text-xs px-5 py-2.5 rounded-full flex items-center gap-2 shadow-lg">
+                    <i class="fa-solid fa-play"></i> Watch Now
+                </button>
+            </div>
+            <div class="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
+                <span id="dot-0" class="w-2 h-2 rounded-full bg-yellow-500 transition-all"></span>
+                <span id="dot-1" class="w-1.5 h-1.5 rounded-full bg-gray-600 transition-all"></span>
+                <span id="dot-2" class="w-1.5 h-1.5 rounded-full bg-gray-600 transition-all"></span>
+            </div>
+        </section>
+
+        <section class="mt-6 px-4">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                    <span class="w-1 h-4 bg-yellow-500 rounded-full"></span> 📺 Live TV
+                </h3>
+                <button onclick="switchView('all-live-tv')" class="text-yellow-500 text-xs font-bold">View All ></button>
+            </div>
+            <div id="home-channels-container" class="flex gap-4 overflow-x-auto no-scrollbar py-1">
+                </div>
+        </section>
+
+        <section class="mt-6 px-4">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                    <span class="w-1 h-4 bg-yellow-500 rounded-full"></span> ⚽ FIFA World Cup 2026
+                </h3>
+                <button onclick="switchView('all-sports')" class="text-yellow-500 text-xs font-bold">View All ></button>
+            </div>
+            <div class="flex gap-3 overflow-x-auto no-scrollbar py-1">
+                <div class="min-w-[170px] bg-[#141124] rounded-xl overflow-hidden border border-gray-900/60 shadow-md relative">
+                    <div onclick="playStream('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', 'Argentina vs France')" class="relative aspect-video cursor-pointer">
+                        <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=300" class="w-full h-full object-cover">
+                        <span class="absolute top-2 left-2 bg-red-600 text-[8px] font-bold px-1.5 py-0.5 rounded">LIVE</span>
+                    </div>
+                    <button onclick="toggleMyList('arg_fr', 'Argentina vs France', 'sports', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')" class="absolute top-2 right-2 bg-black/70 text-white rounded-full w-6 h-6 flex items-center justify-center border border-gray-700 text-xs z-10">
+                        <i id="bookmark-arg_fr" class="fa-regular fa-bookmark"></i>
+                    </button>
+                    <div class="p-2">
+                        <h4 class="text-xs font-bold truncate">Argentina vs France</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-6 px-4">
+            <h3 class="text-sm font-bold flex items-center gap-2 mb-3">
+                <span class="w-1 h-4 bg-yellow-500 rounded-full"></span> ▶️ Continue Watching
+            </h3>
+            <div class="flex gap-3 overflow-x-auto no-scrollbar">
+                <div class="min-w-[160px] bg-[#141124] rounded-xl overflow-hidden border border-gray-900/60 p-1 relative">
+                    <div class="relative aspect-video rounded-lg overflow-hidden flex items-center justify-center">
+                        <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=300" class="w-full h-full object-cover opacity-70">
+                        <i class="fa-solid fa-circle-play absolute text-xl text-white/90 cursor-pointer" onclick="playStream('','Monsoon Nights')"></i>
+                        <button onclick="this.closest('.min-w-\\[160px\\]').remove()" class="absolute top-1 right-1 text-xs text-gray-400 bg-black/60 w-4 h-4 flex items-center justify-center rounded-full">×</button>
+                    </div>
+                    <div class="p-1.5">
+                        <h4 class="text-[11px] font-bold truncate">Monsoon Nights</h4>
+                        <div class="w-full bg-gray-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                            <div class="bg-yellow-500 h-full w-[65%]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-6 px-4 mb-10">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                    <span class="w-1 h-4 bg-yellow-500 rounded-full"></span> 🎬 Trending Movies & Drama
+                </h3>
+                <button onclick="switchView('all-movies-view')" class="text-yellow-500 text-xs font-bold">View All ></button>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+                <div class="flex flex-col bg-[#141124] rounded-lg overflow-hidden border border-gray-900/60 relative">
+                    <div class="aspect-[3/4] relative cursor-pointer" onclick="playStream('', 'Inception 2')">
+                        <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=300" class="w-full h-full object-cover">
+                    </div>
+                    <button onclick="toggleMyList('inception2', 'Inception 2', 'movie', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')" class="absolute top-1 right-1 bg-black/70 text-white rounded-full w-5 h-5 flex items-center justify-center border border-gray-800 text-[10px]">
+                        <i id="bookmark-inception2" class="fa-regular fa-bookmark"></i>
+                    </button>
+                    <div class="p-1.5">
+                        <h4 class="text-[10px] font-bold truncate">Inception 2</h4>
+                        <p class="text-[8px] text-gray-400">Sci-Fi</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <main id="all-live-tv-view" class="hidden p-4">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-bold">All Live TV Channels</h2>
+            <button onclick="switchView('home')" class="bg-red-600 hover:bg-red-700 text-white text-xs px-4 py-1.5 rounded-full font-bold">✕ Close</button>
+        </div>
+        
+        <div class="flex gap-2 overflow-x-auto no-scrollbar mb-6" id="tv-filter-bar">
+            <button onclick="filterChannels('all')" id="btn-filter-all" class="filter-btn bg-yellow-500 text-black font-bold text-xs px-4 py-1.5 rounded-full whitespace-nowrap active-filter">All Channels</button>
+            <button onclick="filterChannels('entertainment')" id="btn-filter-entertainment" class="filter-btn bg-[#1b1731] border border-gray-800 text-gray-400 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">Entertainment</button>
+            <button onclick="filterChannels('news')" id="btn-filter-news" class="filter-btn bg-[#1b1731] border border-gray-800 text-gray-400 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">News</button>
+            <button onclick="filterChannels('movie')" id="btn-filter-movie" class="filter-btn bg-[#1b1731] border border-gray-800 text-gray-400 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">Movie</button>
+            <button onclick="filterChannels('kids')" id="btn-filter-kids" class="filter-btn bg-[#1b1731] border border-gray-800 text-gray-400 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">Kids</button>
+            <button onclick="filterChannels('sports')" id="btn-filter-sports" class="filter-btn bg-[#1b1731] border border-gray-800 text-gray-400 text-xs px-4 py-1.5 rounded-full whitespace-nowrap">Sports</button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-y-6 gap-x-4 justify-items-center" id="channel-list-container"></div>
+    </main>
+
+    <main id="all-movies-view" class="hidden p-4">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-bold">All Movies & Dramas</h2>
+            <button onclick="switchView('home')" class="bg-red-600 hover:bg-red-700 text-white text-xs px-4 py-1.5 rounded-full font-bold">✕ Close</button>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-3">
+            <div class="bg-[#141124] rounded-lg overflow-hidden border border-gray-900/60 relative">
+                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=300" class="w-full aspect-[3/4] object-cover cursor-pointer" onclick="playStream('', 'Inception 2')">
+                <button onclick="toggleMyList('inception2_all', 'Inception 2', 'movie', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')" class="absolute top-1 right-1 bg-black/70 text-white rounded-full w-5 h-5 flex items-center justify-center border border-gray-800 text-[10px]">
+                    <i id="bookmark-inception2_all" class="fa-regular fa-bookmark"></i>
+                </button>
+                <div class="p-1.5"><h4 class="text-[10px] font-bold truncate">Inception 2</h4><p class="text-[8px] text-gray-400">Sci-Fi</p></div>
+            </div>
+        </div>
+    </main>
+
+    <main id="all-sports-view" class="hidden p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-bold">All World Cup Matches</h2>
+            <button onclick="switchView('home')" class="bg-red-600 text-white text-xs px-4 py-1.5 rounded-full font-bold">✕ Close</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-[#141124] rounded-xl border border-gray-900/60 p-3 text-center relative">
+                <span class="text-[8px] text-yellow-500 font-bold block mb-2">GROUP E</span>
+                <p class="text-xs font-bold cursor-pointer" onclick="playStream('', 'Brazil VS Germany')">Brazil VS Germany</p>
+                <button onclick="toggleMyList('br_ger', 'Brazil VS Germany', 'sports', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')" class="absolute top-2 right-2 text-gray-400 text-xs">
+                    <i id="bookmark-br_ger" class="fa-regular fa-bookmark"></i>
+                </button>
+                <span class="text-[9px] text-gray-500 block mt-2">14 Jun • 9:00 PM</span>
+            </div>
+        </div>
+    </main>
+
+    <main id="search-view" class="hidden p-4 pt-6">
+        <div class="flex items-center gap-2 bg-[#1b1731] border border-gray-800 rounded-full px-4 py-2.5 mb-6">
+            <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+            <input type="text" id="search-input" oninput="performSearch()" placeholder="Search channels..." class="bg-transparent text-sm w-full focus:outline-none text-white">
+        </div>
+        <div id="search-results" class="grid grid-cols-2 gap-3"></div>
+    </main>
+
+    <main id="mylist-view" class="hidden p-4">
+        <h2 class="text-3xl font-bold tracking-wide mt-2">My List</h2>
+        <p id="mylist-count-text" class="text-xs text-gray-500 mt-1 font-medium">0 saved items</p>
+
+        <div class="flex gap-2 mt-4 overflow-x-auto no-scrollbar" id="mylist-filter-bar">
+            <button onclick="filterMyListItems('all')" id="ml-filter-all" class="bg-yellow-500 text-black font-bold text-xs px-5 py-2 rounded-full whitespace-nowrap transition-all">All</button>
+            <button onclick="filterMyListItems('entertainment')" id="ml-filter-entertainment" class="bg-[#1b182e]/80 border border-gray-800/60 text-gray-400 text-xs px-4 py-2 rounded-full whitespace-nowrap transition-all">Live TV</button>
+            <button onclick="filterMyListItems('sports')" id="ml-filter-sports" class="bg-[#1b182e]/80 border border-gray-800/60 text-gray-400 text-xs px-4 py-2 rounded-full whitespace-nowrap transition-all">Sports</button>
+        </div>
+
+        <div id="mylist-empty-state" class="flex flex-col items-center justify-center py-24 text-center">
+            <div class="w-20 h-20 rounded-full bg-[#131026] border border-gray-900 flex items-center justify-center shadow-inner mb-6">
+                <i class="fa-regular fa-bookmark text-2xl text-yellow-500"></i>
+            </div>
+            <h3 class="text-lg font-bold tracking-wide">Your list is empty</h3>
+            <p class="text-xs text-gray-500 max-w-[280px] mx-auto mt-2 leading-relaxed">
+                Tap the bookmark icon on any channel, match, or movie to save it here
+            </p>
+            <button onclick="switchView('home')" class="bg-yellow-500 hover:bg-yellow-600 text-black font-extrabold text-xs px-10 py-3.5 rounded-full mt-8 shadow-lg tracking-wide transition-all">
+                Browse Content
+            </button>
+        </div>
+
+        <div id="mylist-items-grid" class="grid grid-cols-2 gap-3 mt-6 hidden"></div>
+    </main>
+
+    <main id="profile-view" class="hidden p-4 animate-fade-in">
+        <div class="mt-6 flex flex-col items-center text-center">
+            <div class="w-24 h-24 rounded-full border-2 border-yellow-500 flex items-center justify-center bg-[#131026] text-yellow-500 text-3xl font-black shadow-xl tracking-tight relative">
+                T
+                <div id="user-points-badge" class="hidden absolute -bottom-2 bg-yellow-500 text-black text-[9px] font-black px-2 py-0.5 rounded-full shadow">0 PTS</div>
+            </div>
+            <h2 id="profile-welcome-text" class="text-2xl font-black mt-4 tracking-tight">Welcome!</h2>
+            <p id="profile-sub-text" class="text-xs text-gray-400 mt-1 font-medium">Sign in to access your full account</p>
+        </div>
+
+        <div onclick="openAuthModal()" class="mt-6 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-2xl p-4 text-black flex justify-between items-center shadow-lg cursor-pointer transition-transform active:scale-95">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">👑</span>
+                <div>
+                    <h4 class="font-extrabold text-sm tracking-tight">৩ মাস ফ্রি ট্রায়াল পান!</h4>
+                    <p class="text-[11px] font-medium opacity-90 mt-0.5">প্রিমিয়াম অ্যাক্সেস — কোনো ক্রেডিট কার্ড নেই</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-sm font-bold"></i>
+        </div>
+
+        <div onclick="alert('Please activate your 3 months trial account first!')" class="mt-3 bg-[#171233] border border-purple-950 rounded-2xl p-4 flex justify-between items-center shadow-md cursor-pointer transition-transform active:scale-95">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">🎁</span>
+                <div>
+                    <h4 class="font-bold text-sm text-gray-100 tracking-tight">Redeem Referral Code</h4>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Enter a code to unlock premium content</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-sm text-gray-500"></i>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mt-4">
+            <div onclick="alert('TV Link feature coming soon!')" class="bg-[#110d24] border border-gray-900/60 rounded-2xl p-4 flex flex-col items-center text-center justify-center min-h-[105px] cursor-pointer">
+                <i class="fa-solid fa-tv text-xl text-yellow-500 mb-2"></i>
+                <h4 class="text-xs font-bold text-gray-200">Sign in to TV</h4>
+                <p class="text-[9px] text-gray-500 mt-0.5">Link your TV device</p>
+            </div>
+            <div onclick="handleReferral()" class="bg-[#110d24] border border-gray-900/60 rounded-2xl p-4 flex flex-col items-center text-center justify-center min-h-[105px] cursor-pointer transition-transform active:scale-95">
+                <i class="fa-solid fa-users text-xl text-yellow-500 mb-2"></i>
+                <h4 class="text-xs font-bold text-gray-200">Refer a Friend</h4>
+                <p class="text-[9px] text-gray-500 mt-0.5">Earn free access</p>
+            </div>
+        </div>
+
+        <div class="mt-5 bg-[#0f0c1b] divide-y divide-gray-900/40">
+            <div onclick="openSettingsModal()" class="flex justify-between items-center py-3.5 cursor-pointer hover:bg-gray-950/20">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-gear text-xs text-yellow-500 w-4"></i>
+                    <span class="text-xs font-bold text-gray-200">Settings</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+            </div>
+            <div class="flex justify-between items-center py-3.5 cursor-pointer">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-circle-question text-xs text-yellow-500 w-4"></i>
+                    <span class="text-xs font-bold text-gray-200">FAQ</span>
+                </div>
+                <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+            </div>
+        </div>
+    </main>
+
+    <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[200] backdrop-blur-sm">
+        <div class="bg-[#141126] w-full max-w-sm rounded-2xl border border-purple-950 p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-bold text-yellow-500">Create Free Account</h3>
+                <button onclick="closeAuthModal()" class="text-gray-400 text-sm">✕</button>
+            </div>
+            <p class="text-xs text-gray-400 mb-4">Sign up with Gmail or Phone Number to unlock your 3 Months Free Trial subscription!</p>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[11px] text-gray-400 font-bold mb-1">Gmail Address</label>
+                    <input type="email" id="auth-email" placeholder="example@gmail.com" class="w-full bg-[#0f0c1b] border border-gray-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-yellow-500 text-white">
+                </div>
+                <div class="text-center text-[10px] text-gray-600 font-bold">OR</div>
+                <div>
+                    <label class="block text-[11px] text-gray-400 font-bold mb-1">Phone Number</label>
+                    <input type="tel" id="auth-phone" placeholder="+880 1XXXXXXXXX" class="w-full bg-[#0f0c1b] border border-gray-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-yellow-500 text-white">
+                </div>
+            </div>
+            <button onclick="submitAuth()" class="w-full bg-yellow-500 text-black text-xs font-black py-3 rounded-xl mt-6 shadow-lg">
+                Create & Activate Trial
+            </button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[200] backdrop-blur-sm">
+        <div class="bg-[#141126] w-full max-w-sm rounded-2xl border border-gray-900 p-5 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-900 pb-2">
+                <h3 class="text-sm font-bold text-gray-100 flex items-center gap-2">
+                    <i class="fa-solid fa-gear text-yellow-500"></i> App Settings
+                </h3>
+                <button onclick="closeSettingsModal()" class="text-gray-400 text-xs bg-gray-900 px-2 py-1 rounded">✕ Close</button>
+            </div>
+            <div class="space-y-4 py-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-medium text-gray-300">Dark Mode Status</span>
+                    <span class="text-[10px] bg-green-950 text-green-400 font-bold px-2 py-0.5 rounded">Always On</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-medium text-gray-300">Streaming Quality</span>
+                    <select class="bg-[#0f0c1b] border border-gray-800 text-xs rounded px-1 py-0.5 text-yellow-500 outline-none">
+                        <option>Auto (Recommended)</option>
+                        <option>1080p Ultra HD</option>
+                        <option>720p HD</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[200] backdrop-blur-sm">
+        <div class="bg-[#141126] w-full max-w-sm rounded-2xl border border-gray-900 p-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-900 pb-2">
+                <h3 class="text-sm font-bold text-gray-100">Notifications Center</h3>
+                <button onclick="toggleNotificationModal()" class="text-gray-400 text-xs">✕ Close</button>
+            </div>
+            <div id="notification-list" class="space-y-2.5 max-h-60 overflow-y-auto no-scrollbar">
+                <div class="bg-[#0f0c1b] p-2.5 rounded-xl border border-gray-900">
+                    <p class="text-xs font-bold text-yellow-500">🔥 Welcome Promo</p>
+                    <p class="text-[10px] text-gray-400 mt-0.5">Subscribe to any sports tier and get cashback coupon code instantly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="fixed bottom-0 left-0 right-0 bg-[#120f22] border-t border-gray-900/60 flex justify-around items-center py-2.5 z-[100]">
+        <button onclick="switchView('home')" id="nav-home" class="flex flex-col items-center gap-1 text-yellow-500">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span class="text-[10px] font-bold">Home</span>
+        </button>
+        <button onclick="switchView('search')" id="nav-search" class="flex flex-col items-center gap-1 text-gray-400">
+            <i class="fa-solid fa-magnifying-glass text-lg"></i>
+            <span class="text-[10px] font-medium">Search</span>
+        </button>
+        <button onclick="switchView('mylist')" id="nav-mylist" class="flex flex-col items-center gap-1 text-gray-400">
+            <i class="fa-regular fa-bookmark text-lg"></i>
+            <span class="text-[10px] font-medium">My List</span>
+        </button>
+    </footer>
+
+    <script>
+        let activeHls = null;
+        const videoElement = document.getElementById('video-player');
+        let userPoints = 0;
+        let totalNotifications = 3; 
+        let isLoggedIn = false;
+
+        let myWatchList = [];
+        let currentWatchListFilter = 'all';
+
+        // --- AUTH & CONFIG ---
+        function openAuthModal() {
+            if(isLoggedIn) { alert("Your Free Trial is active!"); return; }
+            document.getElementById('auth-modal').classList.remove('hidden');
+        }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+        function openSettingsModal() { document.getElementById('settings-modal').classList.remove('hidden'); }
+        function closeSettingsModal() { document.getElementById('settings-modal').classList.add('hidden'); }
+        function toggleNotificationModal() {
+            const modal = document.getElementById('notification-modal');
+            modal.classList.toggle('hidden');
+            if(!modal.classList.contains('hidden')) { document.getElementById('noti-count').classList.add('hidden'); }
+        }
+
+        function submitAuth() {
+            const emailInput = document.getElementById('auth-email').value;
+            const phoneInput = document.getElementById('auth-phone').value;
+            if(!emailInput && !phoneInput) { alert("Please fill up credentials!"); return; }
+            isLoggedIn = true;
+            closeAuthModal();
+            document.getElementById('profile-welcome-text').innerText = "Premium User";
+            document.getElementById('profile-sub-text').innerText = "Trial Active";
+            alert("Free Trial activated successfully.");
+        }
+
+        function handleReferral() {
+            if(!isLoggedIn) { alert("Create account first!"); return; }
+            userPoints += 1000;
+            document.getElementById('user-points-badge').innerText = userPoints + " PTS";
+            alert("Referral Link Copied! 1,000 Points added.");
+        }
+
+        // --- SLIDER ENGINE ---
+        const sliderTemplates = [
+            { title: "Trending Movies", desc: "New releases every week", img: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=800", streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
+            { title: "World Cup Live Special", desc: "Catch live matches in HD", img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800", streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
+        ];
+        let currentSlideIdx = 0;
+        function startAutoSlider() {
+            setInterval(() => {
+                currentSlideIdx = (currentSlideIdx + 1) % sliderTemplates.length;
+                updateSliderUI(currentSlideIdx);
+            }, 3000);
+        }
+        function updateSliderUI(idx) {
+            const bgImg = document.getElementById('hero-bg');
+            const title = document.getElementById('hero-title');
+            const desc = document.getElementById('hero-desc');
+            const playBtn = document.getElementById('hero-play-btn');
+            if(!bgImg || !title || !desc || !playBtn) return;
+            bgImg.style.opacity = '0.2';
+            setTimeout(() => {
+                bgImg.src = sliderTemplates[idx].img;
+                title.innerText = sliderTemplates[idx].title;
+                desc.innerText = sliderTemplates[idx].desc;
+                playBtn.setAttribute('onclick', `playStream('${sliderTemplates[idx].streamUrl}', '${sliderTemplates[idx].title}')`);
+                bgImg.style.opacity = '0.5';
+            }, 400);
+        }
+
+        // --- WATCHLIST (MY LIST) CORE LOGIC ---
+        function toggleMyList(id, name, category, url) {
+            const index = myWatchList.findIndex(item => item.id === id);
+            
+            if (index > -1) {
+                myWatchList.splice(index, 1);
+                updateBookmarkIconStyle(id, false);
+            } else {
+                myWatchList.push({ id, name, category, url });
+                updateBookmarkIconStyle(id, true);
+            }
+            
+            renderMyListUI();
+            // Sync current views to display state properly
+            const currentActiveFilter = document.querySelector('.active-filter')?.id?.replace('btn-filter-', '') || 'all';
+            filterChannels(currentActiveFilter);
+            renderHomeChannels();
+        }
+
+        function updateBookmarkIconStyle(id, isBookmarked) {
+            const icon = document.getElementById(`bookmark-${id}`);
+            if (icon) {
+                icon.className = isBookmarked ? "fa-solid fa-bookmark text-yellow-500" : "fa-regular fa-bookmark";
+            }
+            const allTvIcon = document.getElementById(`bookmark-alltv-${id}`);
+            if (allTvIcon) {
+                allTvIcon.className = isBookmarked ? "fa-solid fa-bookmark text-yellow-500" : "fa-regular fa-bookmark";
+            }
+        }
+
+        function renderMyListUI() {
+            const emptyState = document.getElementById('mylist-empty-state');
+            const itemsGrid = document.getElementById('mylist-items-grid');
+            const countText = document.getElementById('mylist-count-text');
+            
+            countText.innerText = `${myWatchList.length} saved items`;
+
+            let filteredList = myWatchList;
+            if (currentWatchListFilter !== 'all') {
+                filteredList = myWatchList.filter(item => item.category === currentWatchListFilter);
+            }
+
+            if (filteredList.length === 0) {
+                emptyState.classList.remove('hidden');
+                itemsGrid.classList.add('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            itemsGrid.classList.remove('hidden');
+            itemsGrid.innerHTML = '';
+
+            filteredList.forEach(item => {
+                itemsGrid.innerHTML += `
+                    <div class="bg-[#141124] border border-gray-900 p-3 rounded-xl flex flex-col justify-between relative shadow-md">
+                        <div onclick="playStream('${item.url}', '${item.name}')" class="cursor-pointer">
+                            <div class="w-10 h-10 rounded-full bg-[#1b1731] flex items-center justify-center text-xs font-bold text-yellow-500 mb-2">
+                                ${item.name[0]}
+                            </div>
+                            <h4 class="text-xs font-bold truncate">${item.name}</h4>
+                            <span class="text-[9px] text-gray-500 uppercase">${item.category === 'entertainment' ? 'Live TV' : item.category}</span>
+                        </div>
+                        <button onclick="toggleMyList('${item.id}', '${item.name}', '${item.category}', '${item.url}')" class="absolute top-3 right-3 text-red-500 text-xs hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function filterMyListItems(category) {
+            currentWatchListFilter = category;
+            
+            const buttons = document.querySelectorAll('#mylist-filter-bar button');
+            buttons.forEach(btn => {
+                btn.className = "bg-[#1b182e]/80 border border-gray-800/60 text-gray-400 text-xs px-4 py-2 rounded-full whitespace-nowrap transition-all";
+            });
+
+            const activeBtn = document.getElementById(`ml-filter-${category}`);
+            if (activeBtn) {
+                activeBtn.className = "bg-yellow-500 text-black font-bold text-xs px-5 py-2 rounded-full whitespace-nowrap transition-all";
+            }
+
+            renderMyListUI();
+        }
+
+        // --- NAVIGATION CONTROLLER ---
+        function switchView(viewName) {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('all-live-tv-view').classList.add('hidden');
+            document.getElementById('all-movies-view').classList.add('hidden');
+            document.getElementById('all-sports-view').classList.add('hidden');
+            document.getElementById('search-view').classList.add('hidden');
+            document.getElementById('mylist-view').classList.add('hidden');
+            document.getElementById('profile-view').classList.add('hidden');
+            
+            if(viewName === 'home') { document.getElementById('top-nav').classList.remove('hidden'); } 
+            else { document.getElementById('top-nav').classList.add('hidden'); }
+
+            document.getElementById(viewName + '-view').classList.remove('hidden');
+
+            document.getElementById('nav-home').className = "flex flex-col items-center gap-1 text-gray-400";
+            document.getElementById('nav-search').className = "flex flex-col items-center gap-1 text-gray-400";
+            document.getElementById('nav-mylist').className = "flex flex-col items-center gap-1 text-gray-400";
+
+            if (viewName === 'home') document.getElementById('nav-home').className = "flex flex-col items-center gap-1 text-yellow-500 font-bold";
+            if (viewName === 'search') document.getElementById('nav-search').className = "flex flex-col items-center gap-1 text-yellow-500 font-bold";
+            if (viewName === 'mylist') {
+                document.getElementById('nav-mylist').className = "flex flex-col items-center gap-1 text-yellow-500 font-bold";
+                renderMyListUI();
+            }
+        }
+
+        // --- CHANNELS DATA GRID (২০টি রিয়েলিস্টিক চ্যানেল অ্যাড করা হয়েছে) ---
+        const channelData = [
+            { id: 'ntv', name: 'NTV', category: 'entertainment', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'rtv', name: 'RTV', category: 'entertainment', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'somoy', name: 'Somoy TV', category: 'news', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'independent', name: 'Independent', category: 'news', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'jamuna', name: 'Jamuna TV', category: 'news', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'channeli', name: 'Channel I', category: 'entertainment', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'atn', name: 'ATN Bangla', category: 'entertainment', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'ekattor', name: '71 TV', category: 'news', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'news24', name: 'News24', category: 'news', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'cartoon', name: 'Cartoon Net', category: 'kids', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'disney', name: 'Disney Ch', category: 'kids', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'pogo', name: 'Pogo', category: 'kids', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 't-sports', name: 'T Sports', category: 'sports', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'gazi', name: 'GTV Sports', category: 'sports', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'sony-ten', name: 'Sony Ten 1', category: 'sports', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'star-sports', name: 'Star Sports', category: 'sports', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'hbo', name: 'HBO Movies', category: 'movie', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'star-movies', name: 'Star Movies', category: 'movie', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'sony-pix', name: 'Sony PIX', category: 'movie', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
+            { id: 'bioscope', name: 'Bioscope Prime', category: 'movie', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' }
+        ];
+
+        // Home স্ক্রিনে প্রথম ১০টি চ্যানেল রেন্ডার করার ফাংশন
+        function renderHomeChannels() {
+            const container = document.getElementById('home-channels-container');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            // প্রথম ১০টি চ্যানেল হোমপেজে স্লাইডার হিসেবে দেখাবে
+            const homeChannels = channelData.slice(0, 10);
+            homeChannels.forEach(ch => {
+                const isSaved = myWatchList.some(item => item.id === ch.id);
+                const iconClass = isSaved ? "fa-solid fa-bookmark text-yellow-500" : "fa-regular fa-bookmark";
+                
+                container.innerHTML += `
+                    <div class="flex flex-col items-center min-w-[65px] relative group">
+                        <div onclick="playStream('${ch.url}', '${ch.name} Live')" class="w-16 h-16 rounded-full border border-purple-600/40 bg-[#1b1731] flex items-center justify-center relative shadow-md cursor-pointer">
+                            <span class="text-[10px] font-bold text-gray-300 text-center px-1">${ch.name}</span>
+                            <span class="absolute bottom-0 bg-red-600 text-[7px] font-extrabold px-1 rounded uppercase animate-pulse">Live</span>
+                        </div>
+                        <button onclick="toggleMyList('${ch.id}', '${ch.name}', '${ch.category}', '${ch.url}')" class="absolute top-0 right-0 bg-black/70 text-white rounded-full w-5 h-5 flex items-center justify-center border border-gray-800 text-[10px]">
+                            <i id="bookmark-${ch.id}" class="${iconClass}"></i>
+                        </button>
+                        <span class="text-[10px] text-gray-400 font-medium mt-1 text-center truncate w-16">${ch.name}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function filterChannels(category) {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => { btn.className = "filter-btn bg-[#1b1731] border border-gray-800 text-gray-400 text-xs px-4 py-1.5 rounded-full whitespace-nowrap"; });
+            const activeBtn = document.getElementById('btn-filter-' + category);
+            if(activeBtn) activeBtn.className = "filter-btn bg-yellow-500 text-black font-bold text-xs px-4 py-1.5 rounded-full whitespace-nowrap active-filter";
+
+            const container = document.getElementById('channel-list-container');
+            container.innerHTML = '';
+
+            const filtered = category === 'all' ? channelData : channelData.filter(ch => ch.category === category);
+            filtered.forEach(ch => {
+                const isSaved = myWatchList.some(item => item.id === ch.id);
+                const iconClass = isSaved ? "fa-solid fa-bookmark text-yellow-500" : "fa-regular fa-bookmark";
+
+                container.innerHTML += `
+                    <div class="flex flex-col items-center relative group">
+                        <div onclick="playStream('${ch.url}', '${ch.name} Live')" class="w-16 h-16 rounded-full border border-purple-600/30 bg-[#1b1731] flex items-center justify-center relative shadow-md cursor-pointer">
+                            <span class="text-[10px] font-bold text-center px-1 text-gray-300">${ch.name}</span>
+                            <span class="absolute bottom-0 bg-red-600 text-[6px] px-1 rounded font-black uppercase tracking-wider">Live</span>
+                        </div>
+                        <button onclick="toggleMyList('${ch.id}', '${ch.name}', '${ch.category}', '${ch.url}')" class="absolute top-0 right-0 bg-black/80 text-white rounded-full w-5 h-5 flex items-center justify-center border border-gray-800 text-[9px]">
+                            <i id="bookmark-alltv-${ch.id}" class="${iconClass}"></i>
+                        </button>
+                        <span class="text-[11px] text-gray-400 mt-2 text-center truncate w-20">${ch.name}</span>
+                    </div>`;
+            });
+        }
+
+        function performSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const resultsContainer = document.getElementById('search-results');
+            resultsContainer.innerHTML = '';
+            if(!query) return;
+
+            const matched = channelData.filter(ch => ch.name.toLowerCase().includes(query));
+            matched.forEach(ch => {
+                resultsContainer.innerHTML += `
+                    <div onclick="playStream('${ch.url}', '${ch.name}')" class="bg-[#141124] border border-gray-800 p-3 rounded-xl flex items-center gap-3 cursor-pointer">
+                        <div class="w-10 h-10 rounded-full bg-[#1b1731] flex items-center justify-center text-xs font-bold text-yellow-500">${ch.name[0]}</div>
+                        <div>
+                            <h4 class="text-xs font-bold">${ch.name}</h4>
+                            <span class="text-[9px] text-gray-500 uppercase">${ch.category}</span>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // --- STREAMING ENGINE (HLS) ---
+        function playStream(url, title) {
+            const finalUrl = url || "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+            document.getElementById('player-section').classList.remove('hidden');
+            document.getElementById('current-title').innerText = title;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (Hls.isSupported()) {
+                if (activeHls) activeHls.destroy();
+                activeHls = new Hls();
+                activeHls.loadSource(finalUrl);
+                activeHls.attachMedia(videoElement);
+                activeHls.on(Hls.Events.MANIFEST_PARSED, () => videoElement.play());
+            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                videoElement.src = finalUrl;
+                videoElement.addEventListener('loadedmetadata', () => videoElement.play());
+            }
+        }
+
+        function closePlayer() {
+            document.getElementById('player-section').classList.add('hidden');
+            videoElement.pause();
+            if (activeHls) { activeHls.destroy(); activeHls = null; }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            renderHomeChannels();
+            filterChannels('all');
+            startAutoSlider();
+        });
+    </script>
+</body>
+</html>
