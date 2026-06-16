@@ -81,7 +81,7 @@
                 <button onclick="switchView('all-live-tv')" class="text-yellow-500 text-xs font-bold">View All ></button>
             </div>
             <div id="home-channels-container" class="flex gap-4 overflow-x-auto no-scrollbar py-1">
-                </div>
+            </div>
         </section>
 
         <section class="mt-6 px-4">
@@ -178,11 +178,11 @@
         
         <div class="grid grid-cols-3 gap-3">
             <div class="bg-[#141124] rounded-lg overflow-hidden border border-gray-900/60 relative">
-                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=300" class="w-full aspect-[3/4] object-cover cursor-pointer" onclick="playStream('', 'Inception 2')">
-                <button onclick="toggleMyList('inception2_all', 'Inception 2', 'movie', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')" class="absolute top-1 right-1 bg-black/70 text-white rounded-full w-5 h-5 flex items-center justify-center border border-gray-800 text-[10px]">
-                    <i id="bookmark-inception2_all" class="fa-regular fa-bookmark"></i>
+                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=300" class="w-full aspect-[3/4] object-cover cursor-pointer" onclick="playStream('http://41.205.93.154/JALSHAMOVIES/index.m3u8', 'जलसा मुवीज')">
+                <button onclick="toggleMyList('jalshamovies_all', 'जलসা মুভিজ', 'movie', 'http://41.205.93.154/JALSHAMOVIES/index.m3u8')" class="absolute top-1 right-1 bg-black/70 text-white rounded-full w-5 h-5 flex items-center justify-center border border-gray-800 text-[10px]">
+                    <i id="bookmark-jalshamovies_all" class="fa-regular fa-bookmark"></i>
                 </button>
-                <div class="p-1.5"><h4 class="text-[10px] font-bold truncate">Inception 2</h4><p class="text-[8px] text-gray-400">Sci-Fi</p></div>
+                <div class="p-1.5"><h4 class="text-[10px] font-bold truncate">जलসা মুভিজ</h4><p class="text-[8px] text-gray-400">Movie</p></div>
             </div>
         </div>
     </main>
@@ -195,9 +195,9 @@
         <div class="grid grid-cols-2 gap-3">
             <div class="bg-[#141124] rounded-xl border border-gray-900/60 p-3 text-center relative">
                 <span class="text-[8px] text-yellow-500 font-bold block mb-2">GROUP E</span>
-                <p class="text-xs font-bold cursor-pointer" onclick="playStream('', 'Brazil VS Germany')">Brazil VS Germany</p>
-                <button onclick="toggleMyList('br_ger', 'Brazil VS Germany', 'sports', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')" class="absolute top-2 right-2 text-gray-400 text-xs">
-                    <i id="bookmark-br_ger" class="fa-regular fa-bookmark"></i>
+                <p class="text-xs font-bold cursor-pointer" onclick="playStream('http://41.205.93.154/STARSPORTS1/index.m3u8', 'Star Sports 1 HD')">Star Sports Live</p>
+                <button onclick="toggleMyList('star_sports_1_wc', 'Star Sports 1 HD', 'sports', 'http://41.205.93.154/STARSPORTS1/index.m3u8')" class="absolute top-2 right-2 text-gray-400 text-xs">
+                    <i id="bookmark-star_sports_1_wc" class="fa-regular fa-bookmark"></i>
                 </button>
                 <span class="text-[9px] text-gray-500 block mt-2">14 Jun • 9:00 PM</span>
             </div>
@@ -424,8 +424,8 @@
 
         // --- SLIDER ENGINE ---
         const sliderTemplates = [
-            { title: "Trending Movies", desc: "New releases every week", img: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=800", streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
-            { title: "World Cup Live Special", desc: "Catch live matches in HD", img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800", streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" }
+            { title: "Trending Movies", desc: "New releases every week", img: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=800", streamUrl: "http://41.205.93.154/JALSHAMOVIES/index.m3u8" },
+            { title: "World Cup Live Special", desc: "Catch live matches in HD", img: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800", streamUrl: "http://41.205.93.154/STARSPORTS1/index.m3u8" }
         ];
         let currentSlideIdx = 0;
         function startAutoSlider() {
@@ -463,7 +463,6 @@
             }
             
             renderMyListUI();
-            // Sync current views to display state properly
             const currentActiveFilter = document.querySelector('.active-filter')?.id?.replace('btn-filter-', '') || 'all';
             filterChannels(currentActiveFilter);
             renderHomeChannels();
@@ -510,7 +509,7 @@
                                 ${item.name[0]}
                             </div>
                             <h4 class="text-xs font-bold truncate">${item.name}</h4>
-                            <span class="text-[9px] text-gray-500 uppercase">${item.category === 'entertainment' ? 'Live TV' : item.category}</span>
+                            <span class="text-[9px] text-gray-500 uppercase">${item.category}</span>
                         </div>
                         <button onclick="toggleMyList('${item.id}', '${item.name}', '${item.category}', '${item.url}')" class="absolute top-3 right-3 text-red-500 text-xs hover:scale-110 transition-transform">
                             <i class="fa-solid fa-trash-can"></i>
@@ -563,37 +562,66 @@
             }
         }
 
-        // --- CHANNELS DATA GRID (২০টি রিয়েলিস্টিক চ্যানেল অ্যাড করা হয়েছে) ---
+        // --- আপনার ৪৩টি রিয়েলিস্টিক চ্যানেল ক্যাটাগরি সহ যুক্ত করা হলো ---
         const channelData = [
-             { id: 'caze-tv', name: 'Caze TV', category: 'entertainment', url: 'https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/1080p-vtt/index.m3u8' },
-            { id: 't-sports', name: 'T Sports', category: 'sports', url: 'http://rgkkw.live:80/live/1Aoen7elp5/IgMJ60tmAa/130714.ts' },
-            { id: 't-sports-2', name: 'T Sports 2', category: 'sports', url: 'http://103.59.176.72:8083/live1/tracks-v1a1/mono.m3u8?token=123' },
-            { id: 'ptv-sports', name: 'PTV Sports', category: 'sports', url: 'https://tvsen5.aynaott.com/PtvSports/index.m3u8' },
+            // ========== SPORTS ==========
             { id: 'bein-1', name: 'Bein Sports 1', category: 'sports', url: 'https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8' },
             { id: 'bein-direct', name: 'Bein Direct', category: 'sports', url: 'https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8' },
             { id: 'bein-max-2', name: 'Bein Max 2', category: 'sports', url: 'http://go8knm.optikl.ink/X/index.php/Besyria1/video.m3u8' },
             { id: 'win-sports', name: 'WIN Sports', category: 'sports', url: 'https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8' },
-            { id: '4k-hdr', name: '4K HDR', category: 'entertainment', url: 'http://go8knm.optikl.ink/X/index.php/Besyria3/video.m3u8' },
-            { id: 'ntv', name: 'NTV', category: 'entertainment', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'rtv', name: 'RTV', category: 'entertainment', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'somoy', name: 'Somoy TV', category: 'news', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'independent', name: 'Independent', category: 'news', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'jamuna', name: 'Jamuna TV', category: 'news', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'channeli', name: 'Channel I', category: 'entertainment', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'atn', name: 'ATN Bangla', category: 'entertainment', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'ekattor', name: '71 TV', category: 'news', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'news24', name: 'News24', category: 'news', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'cartoon', name: 'Cartoon Net', category: 'kids', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'disney', name: 'Disney Ch', category: 'kids', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'pogo', name: 'Pogo', category: 'kids', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 't-sports', name: 'T Sports', category: 'sports', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'gazi', name: 'GTV Sports', category: 'sports', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'sony-ten', name: 'Sony Ten 1', category: 'sports', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'star-sports', name: 'Star Sports', category: 'sports', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'hbo', name: 'HBO Movies', category: 'movie', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'star-movies', name: 'Star Movies', category: 'movie', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'sony-pix', name: 'Sony PIX', category: 'movie', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' },
-            { id: 'bioscope', name: 'Bioscope Prime', category: 'movie', url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8' }
+            { id: 'bein-sports-4k', name: 'beIN SPORTS 4k', category: 'sports', url: 'http://go8knm.optikl.ink/X/index.php/Besyria3/video.m3u8' },
+            { id: 'star-sports-1-hd', name: 'Star Sports 1 HD', category: 'sports', url: 'http://41.205.93.154/STARSPORTS1/index.m3u8' },
+            { id: 'real-madrid-tv', name: 'REAL MADRID TV', category: 'sports', url: 'https://rmtv.akamaized.net/hls/live/2043153/rmtv-es-web/bitrate_3.m3u8' },
+            { id: 'bein-sport-extra', name: 'BEIN SPORT EXTRA Ñ 🇪🇸', category: 'sports', url: 'https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8' },
+            { id: 'sony-sports-ten-1', name: 'Sony Sports Ten 1 HD', category: 'sports', url: 'http://41.205.93.154/SONYTEN1/index.m3u8' },
+            { id: 'sony-sports-ten-2', name: 'Sony Sports Ten 2 HD', category: 'sports', url: 'http://41.205.93.154/SONYTEN2/index.m3u8' },
+            { id: 'sony-sports-ten-3', name: 'Sony Sports Ten 3 HD', category: 'sports', url: 'http://41.205.93.154/SONYTEN3/index.m3u8' },
+            { id: 'sony-sports-ten-5', name: 'Sony Sports Ten 5 HD', category: 'sports', url: 'http://41.205.93.154/SONYTEN5/index.m3u8' },
+            { id: 'star-sports-2', name: 'Star Sports 2', category: 'sports', url: 'http://41.205.93.154/STARSPORTS2/index.m3u8' },
+            { id: 'star-sports-select-1', name: 'Star Sports Select 1', category: 'sports', url: 'http://41.205.93.154/STARSPORTSSELECT1/index.m3u8' },
+            { id: 'star-sports-select-2', name: 'Star Sports Select 2', category: 'sports', url: 'http://41.205.93.154/STARSPORTSSELECT2/index.m3u8' },
+            { id: 'sports-18-1', name: 'Sports 18 1 HD', category: 'sports', url: 'http://41.205.93.154/SPORTS181/index.m3u8' },
+            { id: 'star-sports-1-hindi', name: 'Star Sports 1 Hindi', category: 'sports', url: 'http://41.205.93.154/STARSPORTS1HINDI/index.m3u8' },
+            { id: 'euro-sports', name: 'Euro Sports', category: 'sports', url: 'http://41.205.93.154/EUROSPORT/index.m3u8' },
+
+            // ========== ENTERTAINMENT ==========
+             { id: '4k-hdr', name: '4K HDR', category: 'entertainment', url: 'http://go8knm.optikl.ink/X/index.php/Besyria3/video.m3u8' },
+            { id: 'caze-tv', name: 'Caze TV', category: 'entertainment', url: 'https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/1080p-vtt/index.m3u8' },
+            { id: 'caze-tv', name: 'Caze TV', category: 'entertainment', url: 'https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/1080p-vtt/index.m3u8' },
+            { id: 'z-bangla-sonara', name: 'Z বাংলাসোনারা', category: 'entertainment', url: 'http://str2.v3v3v.xyz:2082/live/rokhsi25_951396/POm6KqnW/277428.ts' },
+            { id: 'btv', name: 'বিটিভি', category: 'entertainment', url: 'https://owrcovcrpy.gpcdn.net/bpk-tv/1709/output/index.m3u8' },
+            { id: 'mytv', name: 'মাই টিভি', category: 'entertainment', url: 'http://116.204.149.16/mytv/index.m3u8' },
+            { id: 'zee-bangla', name: 'জি বাংলা', category: 'entertainment', url: 'http://41.205.93.154/ZEEBANGLA/index.m3u8' },
+            { id: 'star-jalsha', name: 'স্টার জলসা', category: 'entertainment', url: 'http://41.205.93.154/STARJALSHA/index.m3u8' },
+            { id: 'colors-bangla', name: 'Colors Bangla', category: 'entertainment', url: 'http://41.205.93.154/COLORSBANGLA/index.m3u8' },
+            { id: 'sony-aath', name: 'Sony Aath', category: 'entertainment', url: 'http://41.205.93.154/SONYAATH/index.m3u8' },
+            { id: 'akash-ath', name: 'আকাশ আট', category: 'entertainment', url: 'http://41.205.93.154/AKASHATH/index.m3u8' },
+            { id: 'dd-bangla', name: 'ডিডি বাংলা', category: 'entertainment', url: 'http://41.205.93.154/DDBANGLA/index.m3u8' },
+            { id: 'ruposhi-bangla', name: 'Ruposhi Bangla', category: 'entertainment', url: 'http://41.205.93.154/RUPOSHIBANGLA/index.m3u8' },
+
+            // ========== MOVIES ==========
+            { id: 'jalshamovies', name: 'जलसा মুভিজ', category: 'movie', url: 'http://41.205.93.154/JALSHAMOVIES/index.m3u8' },
+            { id: 'zee-bangla-cinema', name: 'Zee Bangla Cinema', category: 'movie', url: 'http://41.205.93.154/ZEEBANGLACINEMA/index.m3u8' },
+            { id: 'sony-pix-hd', name: 'Sony PIX HD', category: 'movie', url: 'http://41.205.93.154/SONYPIX/index.m3u8' },
+            { id: 'movies-now', name: 'Movies Now HD', category: 'movie', url: 'http://41.205.93.154/MOVIESNOW/index.m3u8' },
+            { id: 'mnx-hd', name: 'MNX HD', category: 'movie', url: 'http://41.205.93.154/MNX/index.m3u8' },
+            { id: 'star-movies-hd', name: 'Star Movies HD', category: 'movie', url: 'http://41.205.93.154/STARMOVIES/index.m3u8' },
+
+            // ========== KIDS ==========
+            { id: 'nick-hd', name: 'Nick HD+', category: 'kids', url: 'http://41.205.93.154/NICK/index.m3u8' },
+            { id: 'sonic-nick', name: 'Sonic Nickelodeon', category: 'kids', url: 'http://41.205.93.154/SONIC/index.m3u8' },
+            { id: 'nick-jr', name: 'Nick Jr', category: 'kids', url: 'http://41.205.93.154/NICKJR/index.m3u8' },
+            { id: 'cartoon-network', name: 'Cartoon Network HD', category: 'kids', url: 'http://41.205.93.154/CARTOONNETWORK/index.m3u8' },
+            { id: 'pogo', name: 'Pogo', category: 'kids', url: 'http://41.205.93.154/POGO/index.m3u8' },
+            { id: 'discovery-kids', name: 'Discovery Kids', category: 'kids', url: 'http://41.205.93.154/DISCOVERYKIDS/index.m3u8' },
+
+            // ========== NEWS (DOCUMENTARIES) ==========
+            { id: 'sony-bbc-earth', name: 'Sony BBC Earth HD', category: 'news', url: 'http://41.205.93.154/SONYBBCEARTH/index.m3u8' },
+            { id: 'discovery-ch', name: 'Discovery Channel HD', category: 'news', url: 'http://41.205.93.154/DISCOVERY/index.m3u8' },
+            { id: 'animal-planet', name: 'Animal Planet HD', category: 'news', url: 'http://41.205.93.154/ANIMALPLANET/index.m3u8' },
+            { id: 'tlc-hd', name: 'TLC HD', category: 'news', url: 'http://41.205.93.154/TLC/index.m3u8' },
+            { id: 'discovery-science', name: 'Discovery Science', category: 'news', url: 'http://41.205.93.154/DISCOVERYSCIENCE/index.m3u8' },
+            { id: 'discovery-turbo', name: 'Discovery Turbo', category: 'news', url: 'http://41.205.93.154/DISCOVERYTURBO/index.m3u8' }
         ];
 
         // Home স্ক্রিনে প্রথম ১০টি চ্যানেল রেন্ডার করার ফাংশন
@@ -602,7 +630,6 @@
             if(!container) return;
             container.innerHTML = '';
             
-            // প্রথম ১০টি চ্যানেল হোমপেজে স্লাইডার হিসেবে দেখাবে
             const homeChannels = channelData.slice(0, 10);
             homeChannels.forEach(ch => {
                 const isSaved = myWatchList.some(item => item.id === ch.id);
@@ -611,7 +638,7 @@
                 container.innerHTML += `
                     <div class="flex flex-col items-center min-w-[65px] relative group">
                         <div onclick="playStream('${ch.url}', '${ch.name} Live')" class="w-16 h-16 rounded-full border border-purple-600/40 bg-[#1b1731] flex items-center justify-center relative shadow-md cursor-pointer">
-                            <span class="text-[10px] font-bold text-gray-300 text-center px-1">${ch.name}</span>
+                            <span class="text-[10px] font-bold text-gray-300 text-center px-1 truncate w-14">${ch.name}</span>
                             <span class="absolute bottom-0 bg-red-600 text-[7px] font-extrabold px-1 rounded uppercase animate-pulse">Live</span>
                         </div>
                         <button onclick="toggleMyList('${ch.id}', '${ch.name}', '${ch.category}', '${ch.url}')" class="absolute top-0 right-0 bg-black/70 text-white rounded-full w-5 h-5 flex items-center justify-center border border-gray-800 text-[10px]">
@@ -640,7 +667,7 @@
                 container.innerHTML += `
                     <div class="flex flex-col items-center relative group">
                         <div onclick="playStream('${ch.url}', '${ch.name} Live')" class="w-16 h-16 rounded-full border border-purple-600/30 bg-[#1b1731] flex items-center justify-center relative shadow-md cursor-pointer">
-                            <span class="text-[10px] font-bold text-center px-1 text-gray-300">${ch.name}</span>
+                            <span class="text-[10px] font-bold text-center px-1 text-gray-300 truncate w-14">${ch.name}</span>
                             <span class="absolute bottom-0 bg-red-600 text-[6px] px-1 rounded font-black uppercase tracking-wider">Live</span>
                         </div>
                         <button onclick="toggleMyList('${ch.id}', '${ch.name}', '${ch.category}', '${ch.url}')" class="absolute top-0 right-0 bg-black/80 text-white rounded-full w-5 h-5 flex items-center justify-center border border-gray-800 text-[9px]">
@@ -672,7 +699,7 @@
 
         // --- STREAMING ENGINE (HLS) ---
         function playStream(url, title) {
-            const finalUrl = url || "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+            const finalUrl = url || "http://41.205.93.154/STARSPORTS1/index.m3u8";
             document.getElementById('player-section').classList.remove('hidden');
             document.getElementById('current-title').innerText = title;
             window.scrollTo({ top: 0, behavior: 'smooth' });
